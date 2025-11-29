@@ -18,8 +18,6 @@ from google.adk.tools.agent_tool import AgentTool
 from google.adk.agents import SequentialAgent, LoopAgent, ParallelAgent
 from google.adk.agents.llm_agent import Agent
 
-from google.adk.models.lite_llm import LiteLlm
-
 from google.genai.types import Content, Part
 
 from prompts import REQUEST_MEETUP_QUERY, ADD_GUEST_QUERY, Announcement_QUERY, EMAIL_QUERY, LINKEDIN_QUERY
@@ -27,8 +25,6 @@ from prompts import REQUEST_MEETUP_QUERY, ADD_GUEST_QUERY, Announcement_QUERY, E
 session_service = InMemorySessionService()
 load_dotenv()
 
-
-openAIModel = LiteLlm(model=os.environ.get("OPENAI_MODEL"))
 googleGenAIModel = os.environ.get("GOOGLE_GENAI_MODEL")
 
 app_name = "EnterpriseConferenceManagementAgent"
@@ -45,8 +41,6 @@ user_id = "ECMA_ALPHA_USER"
 GUEST_DATABASE = {}
 
 GUEST_DATABASE['john.doe@email.com'] = 'John Doe'
-GUEST_DATABASE['kai.trump@email.com'] = 'Kai Trump'
-
 
 ####################
 #     Functions
@@ -152,7 +146,7 @@ google_search_tool = AgentTool(agent=google_search_agent)
 # LinkedIn Research
 linkedin_research = Agent(
     name="linkedin_research",
-    model=openAIModel,
+    model=googleGenAIModel,
     
     instruction="""
     You are a research assistant. You will be given a topic `{{current_plan}}` and you will research on it. Then you will provide a summary of the research.
@@ -162,7 +156,7 @@ linkedin_research = Agent(
 
 # LinkedIn Agent
 linkedin_agent = Agent(
-    model=openAIModel,
+    model=googleGenAIModel,
     name="linkedin_agent",
     description="An agent that generates LinkedIn posts",
     instruction="""
@@ -187,7 +181,7 @@ linkedin_agent = Agent(
 # Intake Agent
 intake_agent = Agent(
     name="intake_agent",
-    model=openAIModel,
+    model=googleGenAIModel,
     instruction="""
     From the user's query, identify the event type (e.g., 'Tech Talk on AI'), the city, and the budget. 
     Then, you MUST call the `update_session_state` tool.
@@ -237,7 +231,7 @@ entertainment_search_agent = Agent(
 # Initial Plan Synthesizer Agent
 initial_plan_synthesizer_agent = Agent(
     name="initial_plan_synthesizer_agent",
-    model=openAIModel,
+    model=googleGenAIModel,
     
     instruction="""
     You are an initial plan synthesizer. Combine the findings from {{venue_options}}, {{catering_options}}, and {{entertainment_options}} into a single JSON object.
@@ -250,7 +244,7 @@ initial_plan_synthesizer_agent = Agent(
 # Account Agent
 accountant_agent = Agent(
     name="accountant_agent",
-    model=openAIModel,
+    model=googleGenAIModel,
     
     tools=[sum_costs],
     instruction=f"""
@@ -302,7 +296,7 @@ cost_cutter_agent = Agent(
 # Final Report
 final_report = Agent(
     name="final_report",
-    model=openAIModel,
+    model=googleGenAIModel,
     
     instruction="""
     You are an expert project assistant compiling a final event plan for a client.
@@ -327,7 +321,7 @@ final_report = Agent(
 # Guest List
 guest_list = Agent(
     name="guest_list",
-    model=openAIModel,
+    model=googleGenAIModel,
     
     instruction="You are a guest management assistant. Use the `add_guest` and `get_guest_list` tools.",
     tools=[add_guest, get_guest_list]
@@ -336,7 +330,7 @@ guest_list = Agent(
 # Communications 
 communications_agent = Agent(
     name="communications_agent",
-    model=openAIModel,
+    model=googleGenAIModel,
     
     instruction="""
     You are a communications expert. Take the event plan from {{current_plan}}.
@@ -421,7 +415,7 @@ linkedin_tool = AgentTool(agent=linkedin_agent)
 
 # Base Agent
 base_agent = Agent(
-    model=openAIModel,
+    model=googleGenAIModel,
     name='base_agent',
 
     instruction="""
